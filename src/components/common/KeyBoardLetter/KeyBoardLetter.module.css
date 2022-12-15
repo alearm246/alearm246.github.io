@@ -1,0 +1,11 @@
+.keyBoardLetterButton {
+    border-radius: 5px;
+    padding: 10px;
+    background-color: #d3d6da;
+    border-style: none;
+    margin: 5px;
+}
+
+.keyBoardLetterButton:hover {
+    transform: translate(0px, 5px);
+}
