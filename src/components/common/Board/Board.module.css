@@ -1,0 +1,14 @@
+.boardContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 20vw;
+    height: 50vh;
+}
+
+.letterRow {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 17%
+}
