@@ -1,20 +1,25 @@
 html {
+  width: 100%;
   height: 100%;
 }
 
 body {
+  width: 100%;
   height: 100%;
+  padding: 0;
+  margin: 0;
 }
 
 div#root {
+  width: 100%;
   height: 100%; /* remove this line to see div.app is no more 100% height */
-  padding: 0 30px;
 }
 
 .App {
   text-align: center;
   padding: 0;
   margin: 0;
+  width: 100;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -24,9 +29,15 @@ div#root {
 .header {
   width: 100%;
   height: 10%;
+  border-bottom: 30px;
+  border-color: gray;
 }
 
-.gameContainer {
-  width: 40%;
+.game-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
   height: 90%;
 }

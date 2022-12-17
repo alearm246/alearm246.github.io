@@ -1,16 +1,18 @@
 import './App.css';
+import React, { useContext } from "react";
 import Board from "../src/components/common/Board/Board";
 import KeyBoard from "../src/components/common/KeyBoard/KeyBoard";
 import { BoardContextProvider } from './context/BoardContext';
+import { BoardContext } from './context/BoardContext';
 import useSecretWord from './customHooks/useSecretWord';
 
 function App() {
   return (
-    <div className="App">
-      <header className="header">
-        <h1>Wordle Game in React JS!!!</h1>
-      </header>
-      <BoardContextProvider>
+    <BoardContextProvider>
+      <div className="App">
+        <header className="header">
+          <h1 style={{fontFamily: "Arial"}}>Alejandro's Wordle</h1>
+        </header>
         <div className="game-container">
           <div className="board-container">
             <Board />
@@ -18,9 +20,9 @@ function App() {
           <div className="keyboard-container">
             <KeyBoard />
           </div>  
-        </div> 
-      </BoardContextProvider>
-    </div>
+        </div>  
+      </div>
+    </BoardContextProvider>
   );
 }
 

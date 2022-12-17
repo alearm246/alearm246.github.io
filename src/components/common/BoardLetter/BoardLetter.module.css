@@ -1,6 +1,12 @@
 .letterContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     width: 15%;
     height: 65%;
     border-style: solid;
     border-color: #d3d6da;
+    font-weight: bold;
+    font-family: "Arial";
+    font-size: 2em;
 }
