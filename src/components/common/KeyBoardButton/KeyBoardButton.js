@@ -1,9 +1,9 @@
 import React from "react";
 import styles from "./KeyBoardButton.module.css";
 
-function KeyBoardButton({ children, handleClick }) {
+function KeyBoardButton({ children, handleClick, style }) {
     return (
-        <button className={styles.keyBoardButton} onClick={handleClick}>
+        <button className={styles.keyBoardButton} onClick={handleClick} style={{...style}}>
             {children}
         </button> 
     )
