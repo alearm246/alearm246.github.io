@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.css": "/alearm246.github.io/static/css/main.6cd8bbe6.css",
+    "main.js": "/alearm246.github.io/static/js/main.d024275d.js",
+    "index.html": "/alearm246.github.io/index.html",
+    "main.6cd8bbe6.css.map": "/alearm246.github.io/static/css/main.6cd8bbe6.css.map",
+    "main.d024275d.js.map": "/alearm246.github.io/static/js/main.d024275d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.6cd8bbe6.css",
+    "static/js/main.d024275d.js"
+  ]
+}
