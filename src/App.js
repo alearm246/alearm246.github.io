@@ -1,5 +1,5 @@
 import './App.css';
-import React, { useContext } from "react";
+import React, { useEffect } from "react";
 import Board from "../src/components/common/Board/Board";
 import KeyBoard from "../src/components/common/KeyBoard/KeyBoard";
 import { BoardContextProvider } from './context/BoardContext';
@@ -7,6 +7,9 @@ import { BoardContext } from './context/BoardContext';
 import useSecretWord from './customHooks/useSecretWord';
 
 function App() {
+  useEffect(() => {
+    alert("hello world");
+  }, []);
   return (
     <BoardContextProvider>
       <div className="App">
