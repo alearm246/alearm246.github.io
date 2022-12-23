@@ -1,5 +1,6 @@
-import React, { useState, createContext, useEffect } from "react";
+import React, { useState, createContext, useEffect, useContext } from "react";
 import BOARD_STATE from "../data/boardState";
+import { UserContext } from "./UserContext";
 import { LETTER_STATE } from "../data/boardState";
 import BoardLetter from "../components/common/BoardLetter/BoardLetter";
 import getColor from "../utils/getColor";
@@ -11,30 +12,33 @@ export function BoardContextProvider({ children }) {
     const [board, setBoard] = useState(BOARD_STATE);
     const [currentRow, setCurrentRow] = useState(0);
     const [currentLetter, setCurrentLetter] = useState(0);
-    const [guessedWord, setGuessedWord] = useState("");
+    const [guessedWord, setGuessedWord] = useState({word: ""});
+    const [isGameOver, setIsGameOver] = useState(false);
+    const { numAttempts, setNumAttempts, setHasWon } = useContext(UserContext)
     const secretWord = "great";
 
     useEffect(() => {
+        const { word } = guessedWord;
         const newBoard = [...board];
-        if(guessedWord.length === 0) return;
-        if(!isValidWord(guessedWord) && currentLetter >= board[currentRow].length - 1) return;
-        if(currentRow > newBoard.length - 1 || guessedWord.length != 5) return;
+        if(word.length === 0) return;
+        if(!isValidWord(word) && currentLetter >= board[currentRow].length - 1) return;
+        if(currentRow > newBoard.length - 1 || word.length != 5) return;
         const letterFreq = getLetterFreq(secretWord);
         //checks if the letter is in the word and in the correct spot
         for(let i=0; i<secretWord.length; i++) {
-            if(guessedWord[i] === secretWord[i] && letterFreq[guessedWord[i]] > 0) {
+            if(word[i] === secretWord[i] && letterFreq[word[i]] > 0) {
                 newBoard[currentRow][i].letterState = LETTER_STATE.correct;
-                letterFreq[guessedWord[i]]--;
+                letterFreq[word[i]]--;
             }
         }
         //checks if the letter is in the word but not in the correct spot
         for(let i=0; i<secretWord.length; i++) {
-            if(guessedWord[i].letterState === LETTER_STATE.correct || guessedWord[i] === secretWord[i]) {
+            if(word[i].letterState === LETTER_STATE.correct || word[i] === secretWord[i]) {
                 continue;
-            } else if(secretWord.includes(guessedWord[i]) && letterFreq[guessedWord[i]] > 0){
-                if(secretWord.includes(guessedWord[i]) && letterFreq[guessedWord[i]] > 0) {
+            } else if(secretWord.includes(word[i]) && letterFreq[word[i]] > 0){
+                if(secretWord.includes(word[i]) && letterFreq[word[i]] > 0) {
                     newBoard[currentRow][i].letterState = LETTER_STATE.incorrectSpot;
-                    letterFreq[guessedWord[i]]--;
+                    letterFreq[word[i]]--;
                 }
             }
         }
@@ -46,25 +50,28 @@ export function BoardContextProvider({ children }) {
                 newBoard[currentRow][i].letterState = LETTER_STATE.wrong;
             }
         }
+        setNumAttempts(numAttempts + 1);
         setCurrentRow(currentRow + 1);
         setCurrentLetter(0);
         setBoard(newBoard);
-    }, [guessedWord])
+    }, [guessedWord]);
 
-    const getLetterFreq = (secretWord) => {
-        const letterFreq = {};
-        for(let i=0; i<secretWord.length; i++) {
-            if(letterFreq[secretWord[i]]) {
-                letterFreq[secretWord[i]]++;
-            } else {
-                letterFreq[secretWord[i]] = 1;
-            }
+    useEffect(() => {
+        if(currentRow > 6) return;
+        if(isWordCorrect()) {
+            setIsGameOver(true);
+            setHasWon(true);
+            console.log("PLAYER HAS WON");
+        } else if(numAttempts === 6 && !isWordCorrect()) {
+            setIsGameOver(true);
+            setHasWon(false);
+            console.log("PLAYER HAS LOST");
         }
-        return letterFreq;
-    }
+    }, [numAttempts, currentLetter, currentRow]);
 
-    const isGameOver = () => {
-        for(let i=0; i<board[currentRow].length; i++) {
+    const isWordCorrect = () => {
+        const check = board[currentRow] ? board[currentRow].length : board[currentRow - 1].length;
+        for(let i=0; i<check; i++) {
             if(currentRow > 0) {
                 if(board[currentRow - 1][i].letterState != LETTER_STATE.correct) {
                     return false;
@@ -78,6 +85,18 @@ export function BoardContextProvider({ children }) {
         return true;
     }
 
+    const getLetterFreq = (secretWord) => {
+        const letterFreq = {};
+        for(let i=0; i<secretWord.length; i++) {
+            if(letterFreq[secretWord[i]]) {
+                letterFreq[secretWord[i]]++;
+            } else {
+                letterFreq[secretWord[i]] = 1;
+            }
+        }
+        return letterFreq;
+    }
+
     const convertLettersIntoWord = () => {
         let word = "";
         if(!board[currentRow]?.length) return "";
@@ -88,7 +107,7 @@ export function BoardContextProvider({ children }) {
     }
 
     const addLetter = letter => {
-        if(isGameOver()) return;
+        if(isGameOver) return;
         const newBoard = [...board];
         if(!newBoard[currentRow]?.length) return;
         if(currentLetter >= newBoard[currentRow]?.length ) return;
@@ -101,7 +120,10 @@ export function BoardContextProvider({ children }) {
     }
 
     const evaluateWord = () => {
-        setGuessedWord(convertLettersIntoWord().toLowerCase());
+        const newGuess = convertLettersIntoWord().toLowerCase();
+        setGuessedWord({
+            word: newGuess
+        });
     }
 
     const deleteLetter = () => {
@@ -124,7 +146,10 @@ export function BoardContextProvider({ children }) {
         secretWord,
         evaluateWord,
         guessedWord,
-        deleteLetter
+        setGuessedWord,
+        deleteLetter,
+        isGameOver,
+        setIsGameOver
     }
 
     return (

@@ -1,11 +1,10 @@
-import React, { useState, useContext } from "react"
+import React, { useEffect, useContext } from "react"
 import BoardLetter from "../BoardLetter/BoardLetter"
 import { BoardContext } from "../../../context/BoardContext";
 import styles from "./Board.module.css"
 
 function Board() {
     const { board } = useContext(BoardContext);
-   
     return (
         <div className={styles.boardContainer}>
             {board.map((row, i) => {
