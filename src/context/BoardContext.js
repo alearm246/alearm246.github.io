@@ -1,7 +1,9 @@
 import React, { useState, createContext, useEffect, useContext } from "react";
-import BOARD_STATE from "../data/boardState";
+import BOARD from "../data/boardState";
 import { UserContext } from "./UserContext";
+import { ToastContext } from "./ToastContext";
 import { LETTER_STATE } from "../data/boardState";
+import { v4 as uuidv4 } from 'uuid';
 import BoardLetter from "../components/common/BoardLetter/BoardLetter";
 import getColor from "../utils/getColor";
 import useSecretWord from "../customHooks/useSecretWord";
@@ -9,18 +11,28 @@ import isValidWord from "../utils/isValidWord";
 
 export const BoardContext = createContext(null);
 export function BoardContextProvider({ children }) {
-    const [board, setBoard] = useState(BOARD_STATE);
+    const [board, setBoard] = useState(BOARD);
     const [currentRow, setCurrentRow] = useState(0);
     const [currentLetter, setCurrentLetter] = useState(0);
     const [guessedWord, setGuessedWord] = useState({word: ""});
     const [isGameOver, setIsGameOver] = useState(false);
     const { numAttempts, setNumAttempts, setHasWon } = useContext(UserContext)
+    const { addToast } = useContext(ToastContext);
     const secretWord = "great";
 
     useEffect(() => {
         const { word } = guessedWord;
-        const newBoard = [...board];
+        const newBoardObj = {...board};
+        const { state: newBoard } = newBoardObj;
         if(word.length === 0) return;
+        
+        if(!isValidWord(word)) {
+            return addToast({
+                id: uuidv4(),
+                message: "Not in word list",
+                createdAt: Date.now()
+            })
+        }
         if(!isValidWord(word) && currentLetter >= board[currentRow].length - 1) return;
         if(currentRow > newBoard.length - 1 || word.length != 5) return;
         const letterFreq = getLetterFreq(secretWord);
@@ -53,7 +65,7 @@ export function BoardContextProvider({ children }) {
         setNumAttempts(numAttempts + 1);
         setCurrentRow(currentRow + 1);
         setCurrentLetter(0);
-        setBoard(newBoard);
+        setBoard(newBoardObj);
     }, [guessedWord]);
 
     useEffect(() => {
@@ -70,14 +82,15 @@ export function BoardContextProvider({ children }) {
     }, [numAttempts, currentLetter, currentRow]);
 
     const isWordCorrect = () => {
-        const check = board[currentRow] ? board[currentRow].length : board[currentRow - 1].length;
+        const { state } = board; 
+        const check = state[currentRow] ? state[currentRow].length : state[currentRow - 1].length;
         for(let i=0; i<check; i++) {
             if(currentRow > 0) {
-                if(board[currentRow - 1][i].letterState != LETTER_STATE.correct) {
+                if(state[currentRow - 1][i].letterState != LETTER_STATE.correct) {
                     return false;
                 }
             } else {
-                if(board[currentRow][i].letterState != LETTER_STATE.correct) {
+                if(state[currentRow][i].letterState != LETTER_STATE.correct) {
                     return false;
                 }
             }
@@ -98,17 +111,19 @@ export function BoardContextProvider({ children }) {
     }
 
     const convertLettersIntoWord = () => {
+        const { state } = board;
         let word = "";
-        if(!board[currentRow]?.length) return "";
-        for(let i=0; i<board[currentRow].length; i++) {
-            word += board[currentRow][i].letter;
+        if(!state[currentRow]?.length) return "";
+        for(let i=0; i<state[currentRow].length; i++) {
+            word += state[currentRow][i].letter;
         }
         return word;
     }
 
     const addLetter = letter => {
         if(isGameOver) return;
-        const newBoard = [...board];
+        const newBoardObj = {...board};
+        const { state: newBoard } = newBoardObj;
         if(!newBoard[currentRow]?.length) return;
         if(currentLetter >= newBoard[currentRow]?.length ) return;
         if(newBoard[currentRow][currentLetter].letterState === LETTER_STATE.unselected) {
@@ -116,7 +131,7 @@ export function BoardContextProvider({ children }) {
             newBoard[currentRow][currentLetter].letterState = LETTER_STATE.placed;
             setCurrentLetter(currentLetter + 1);
         } 
-        setBoard(newBoard);
+        setBoard(newBoardObj);
     }
 
     const evaluateWord = () => {
@@ -128,10 +143,11 @@ export function BoardContextProvider({ children }) {
 
     const deleteLetter = () => {
         if(currentLetter === 0) return;
-        const newBoard = [...board];     
+        const newBoardObj = {...board};
+        const { state: newBoard } = newBoardObj;     
         newBoard[currentRow][currentLetter - 1].letter = "";
         newBoard[currentRow][currentLetter - 1].letterState = LETTER_STATE.unselected;
-        setBoard(newBoard);
+        setBoard(newBoardObj);
         setCurrentLetter(currentLetter - 1);
     }
 

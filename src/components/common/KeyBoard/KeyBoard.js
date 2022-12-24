@@ -48,7 +48,7 @@ function KeyBoard(props) {
 
     const changeKeyBoardColor = () => {
         const newKeyBoard = {...keyBoard};
-        const wordRow = !board[currentRow - 1] ? board[currentRow] : board[currentRow - 1];
+        const wordRow = !board.state[currentRow - 1] ? board.state[currentRow] : board.state[currentRow - 1];
         const firstKeyBoardRow = getKeyBoardRow(newKeyBoard, 1);
         const secondKeyBoardRow = getKeyBoardRow(newKeyBoard, 2);
         const thirdKeyBoardRow = getKeyBoardRow(newKeyBoard, 3);

@@ -1,23 +1,24 @@
 import { useState, useEffect, useContext } from "react";
-import { BoardContext } from "../../../context/BoardContext";
-import { UserContext } from "../../../context/UserContext";
-import Toast from "../../common/Toast/Toast/Toast";
-import BOARD_STATE from "../../../data/boardState";
 import Board from "../../common/Board/Board";
 import KeyBoard from "../../common/KeyBoard/KeyBoard";
-import ToastContainer from "../../common/Toast/ToastContainer/ToastContainer";
 import StatsModal from "../../common/StatsModal/StatsModal";
+import styles from "./OneVOneMode.module.css";
+import { BoardContext } from "../../../context/BoardContext";
+import { UserContext } from "../../../context/UserContext";
+import { v4 as uuidv4 } from 'uuid';
+import BOARD_STATE from "../../../data/boardState";
+import ToastContainer from "../../common/Toast/ToastContainer/ToastContainer";
 import axios from "axios";
-import styles from "./SinglePlayerGame.module.css";
 
-function SinglePlayerGame() {
+
+function OneVOneMode() {
     const [isModalShown, setIsModalShown] = useState(false);
     const { isGameOver, setBoard } = useContext(BoardContext);
     const { user, setUser, hasWon, isLoggedIn } = useContext(UserContext);
     const [startTime, setStartTime] = useState(0);
     const [endTime, setEndTime] = useState(0);
     const [elapsedTime, setElapsedTime] = useState(0);
-    
+
     useEffect(() => {
         console.log("is user logged in on mount? ", isLoggedIn);
         setStartTime(Date.now());
@@ -84,16 +85,19 @@ function SinglePlayerGame() {
     }
 
     return (
-        <div className={styles.singleGameContainer}>
+        <div className={styles.oneVOneModeContainer}>
             {isModalShown && <StatsModal isModalShown={isModalShown} 
                                          setIsModalShown={setIsModalShown}
                                          elapsedTime={elapsedTime}
                              />}
-            <Board />
+            <div className={styles.boardRow}>
+                <Board id={user.id}/>
+                <Board id={uuidv4()}/>
+            </div>
             <KeyBoard />
             <ToastContainer />
         </div>
     )
 }
 
-export default SinglePlayerGame;
+export default OneVOneMode;

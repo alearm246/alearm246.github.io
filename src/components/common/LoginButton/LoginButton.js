@@ -1,14 +1,14 @@
-import React from "react";
-import { UserContext } from "../../../context/UserContext";
+import { useEffect } from "react";
 
 function LoginButton({ styles }) {
+    const handleClick = e => {
+        e.preventDefault();
+        window.location.href = "http://localhost:3001/auth/google";
+    }
     return (
-        <a href={"http://localhost:3001/auth/google"}>
-            <button className={styles}>
-                LOGIN
-            </button>
-        </a>
-        
+        <button className={styles} onClick={handleClick}>
+            LOGIN
+        </button>
     )
 }
 
